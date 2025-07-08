@@ -3,6 +3,8 @@ from joblib import load
 import os
 import mysql.connector
 from mysql.connector import Error
+import pandas as pd
+import matplotlib.pyplot as plt
 
 # ----------------- Page Configuration -----------------
 st.set_page_config(
@@ -90,7 +92,24 @@ with st.expander("🔐 Admin Dashboard"):
 
             if rows:
                 st.write("### 📊 Stored Predictions")
-                st.dataframe(rows, use_container_width=True)
+                df = pd.DataFrame(rows, columns=[
+                    "id", "G1", "G2", "studytime", "failures", "absences", "predicted_grade", "timestamp"
+                ])
+                st.dataframe(df, use_container_width=True)
+
+                # 📉 Bar Chart: Average Predicted Grade by Failures
+                st.write("### 📈 Average Grade by Number of Past Failures")
+                avg_df = df.groupby("failures")["predicted_grade"].mean().reset_index()
+
+                fig, ax = plt.subplots()
+                ax.bar(avg_df["failures"], avg_df["predicted_grade"], color="steelblue")
+                ax.set_xlabel("Number of Past Failures")
+                ax.set_ylabel("Average Predicted Grade")
+                ax.set_title("How Past Failures Affect Predicted Grade")
+                ax.set_xticks(avg_df["failures"])
+
+                st.pyplot(fig)
+
             else:
                 st.info("No predictions stored yet.")
 
