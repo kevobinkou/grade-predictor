@@ -110,6 +110,19 @@ with st.expander("🔐 Admin Dashboard"):
 
                 st.pyplot(fig)
 
+                # 📍 Bar Chart: Average Grade by Study Time
+                st.write("### 📍 Average Grade by Study Time")
+                study_df = df.groupby("studytime")["predicted_grade"].mean().reset_index()
+
+                fig2, ax2 = plt.subplots()
+                ax2.bar(study_df["studytime"], study_df["predicted_grade"], color="salmon")
+                ax2.set_xlabel("Study Time (1 = <2h ... 4 = >10h)")
+                ax2.set_ylabel("Average Predicted Grade")
+                ax2.set_title("Predicted Grade by Study Time")
+                ax2.set_xticks(study_df["studytime"])
+
+                st.pyplot(fig2)
+
             else:
                 st.info("No predictions stored yet.")
 
